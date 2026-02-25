@@ -1,0 +1,236 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{enumitem}
+\renewcommand{\familydefault}{\ttdefault}
+\usepackage[scale=0.9]{FiraMono}
+\usepackage{url}
+
+\title{\textbf{CSU11021 Mid-Semester Test Cheat Sheet}}
+\date{2025-11-04}
+\author{}
+
+\begin{document}
+\maketitle
+
+% ─────────────────────────────────────────────
+\section{Two's Complement for Signed Numbers}
+
+\begin{itemize}
+  \item For 8 bits, the range is $-128$ to $+127$.
+  \item Any value with a 1 in the leftmost bit is negative; any value with a 0 is positive.
+  \item Conversion: flip every bit, then add 1 (converts between positive and negative signed values).
+\end{itemize}
+
+\textbf{Example: What is $-4$ in 8-bit two's complement?}
+
+\begin{enumerate}
+  \item Find 4 in binary:\quad \texttt{0000 0100}
+  \item Flip all bits:\quad \texttt{1111 1011}
+  \item Add 1:
+\begin{verbatim}
+  1111 1011
++ 0000 0001
+-----------
+  1111 1100
+\end{verbatim}
+\end{enumerate}
+
+% ─────────────────────────────────────────────
+\section{Condition Code Flags}
+
+These flags are only modified by a \texttt{CMP} operation or an arithmetic operation
+with an \texttt{s} suffix. \texttt{CMP} acts as subtraction but does not write to a
+register --- it only updates the flags.
+
+\begin{itemize}
+  \item \textbf{C (Carry):} Set to 1 if the operation produces a carry out of the most
+        significant bit (e.g.\ adding two 8-bit numbers where the result would require
+        a 9th bit); otherwise 0.
+  \item \textbf{Z (Zero):} Set to 1 if all bits of the result are zero; otherwise 0.
+  \item \textbf{N (Negative):} Set to 1 if the most significant bit of the result is 1;
+        otherwise 0.
+  \item \textbf{V (oVerflow):} Set to 1 if both operands have the same sign but the
+        result has a different sign; otherwise 0.
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{Arrays}
+
+\begin{itemize}
+  \item Row-major ordering (row index comes first).
+  \item To find the address offset for an element:
+        \begin{align*}
+          \text{index}        &= (\text{row} \times \text{row\_size}) + \text{col} \\
+          \text{byte\_offset} &= \text{index} \times \text{elem\_size}             \\
+          \text{address}      &= \text{array\_base\_address} + \text{byte\_offset}
+        \end{align*}
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{How the Stack Works}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Pasted image 20260224145442.png}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Pasted image 20260224145324.png}
+    \label{fig:placeholder}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Pasted image 20260224150850.png}
+    \label{fig:placeholder}
+\end{figure}
+\begin{itemize}
+  \item \textbf{PUSH} --- Places items on top of the stack.
+        Equivalent to: \texttt{STR R0, [R13, \#-4]!}
+  \item \textbf{POP} --- Removes item from top of stack.
+        Equivalent to: \texttt{LDR R0, [R13], \#4}
+  \item The stack grows downwards in ARM assembly (\emph{full descending}).
+  \item LIFO (Last In, First Out).
+  \item The highest-numbered register in curly braces is always pushed/popped first.
+  \item Everything pushed onto the stack must be popped off.
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{Subroutines}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{Pasted image 20260224134505.png}
+    
+    \label{fig:placeholder}
+\end{figure}
+\begin{itemize}
+  \item Parameters are passed using registers \texttt{R0}--\texttt{R3}.
+        \begin{itemize}
+          \item If more parameters are needed, use the system stack:
+                \begin{itemize}
+                  \item Calling program pushes parameters onto the stack.
+                  \item Subroutine accesses parameters relative to the stack pointer.
+                  \item Calling program pops parameters off the stack after the
+                        subroutine returns.
+                \end{itemize}
+          \item \texttt{R0}--\texttt{R3} should be assumed clobbered by the subroutine
+                unless used to pass data in/out.
+        \end{itemize}
+  \item If calling another subroutine from within a subroutine, \textbf{PUSH} the link
+        register \texttt{LR} at the start.
+  \item Subroutines must \textbf{PUSH} all registers they use onto the system stack at
+        the \emph{start} of the subroutine, and \textbf{POP} them back at the \emph{end}.
+  \item Subroutines can call themselves recursively (e.g.\ computing powers).
+  \item All labels except \texttt{main} must be prefixed with \texttt{.L}.
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{Handy Reference}
+
+\subsection*{Hexadecimal Table}
+
+\begin{center}
+\begin{tabular}{ccc}
+  \toprule
+  Hex & Decimal & Binary \\
+  \midrule
+  0   & 0       & 0000   \\
+  1   & 1       & 0001   \\
+  2   & 2       & 0010   \\
+  3   & 3       & 0011   \\
+  4   & 4       & 0100   \\
+  5   & 5       & 0101   \\
+  6   & 6       & 0110   \\
+  7   & 7       & 0111   \\
+  8   & 8       & 1000   \\
+  9   & 9       & 1001   \\
+  A   & 10      & 1010   \\
+  B   & 11      & 1011   \\
+  C   & 12      & 1100   \\
+  D   & 13      & 1101   \\
+  E   & 14      & 1110   \\
+  F   & 15      & 1111   \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{MOV vs LDR}
+
+\texttt{MOV} can only store a limited range of values, whereas \texttt{LDR} does not
+have this limitation.
+
+% ─────────────────────────────────────────────
+\section{Definitions}
+
+\begin{itemize}
+  \item \textbf{bit} --- 1 binary digit
+  \item \textbf{byte} --- 8 binary digits
+  \item \textbf{halfword} --- 2 bytes
+  \item \textbf{word} --- 4 bytes
+  \item \textbf{LSL} --- Logical Shift Left (equivalent to multiplying by $2^{n}$)
+  \item \textbf{LSR} --- Logical Shift Right (equivalent to dividing by $2^{n}$)
+  \item \textbf{LDM / STM} --- Load/Store Multiple. Requires word alignment
+        (\texttt{memoryAddress \% 4 == 0})
+  \item \textbf{LDMIA / STMIA} --- IA = Increment After. Automatically increments the
+        base address by the number of bytes read/written.
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{Efficiency Notes}
+
+\begin{itemize}
+  \item Every instruction takes at least one cycle.
+  \item \texttt{UDIV} requires multiple cycles (dependent on the values involved).
+  \item Each memory access costs one extra cycle.
+        Relevant for: \texttt{LDR}, \texttt{STR}, \texttt{LDM}, \texttt{STM},
+        \texttt{PUSH}, \texttt{POP}.
+  \item Reading words or halfwords across a word boundary costs \emph{two} extra cycles
+        instead of one.
+  \item Taken branches incur a 2-cycle pipeline stall penalty.
+        \begin{itemize}
+          \item Ensure you actually need the branch.
+          \item If-then-else constructs are expensive.
+          \item For conditional branches, optimise for the common case.
+        \end{itemize}
+\end{itemize}
+
+\bigskip
+\begin{center}
+
+
+\Large\bfseries License
+\end{center}
+
+\bigskip
+
+Copyright \copyright\ 2026 Tommy Byrne
+
+\bigskip
+
+This work is free documentation: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\bigskip
+
+This work is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+\bigskip
+
+You should have received a copy of the GNU General Public License
+along with this work. If not, see
+\url{https://www.gnu.org/licenses/}.
+
+\bigskip
+
+Source files are available at:
+\url{https://github.com/mbdalpha/openNotes}
+
+\end{document}
