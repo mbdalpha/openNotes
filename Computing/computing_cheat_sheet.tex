@@ -8,6 +8,7 @@
 \renewcommand{\familydefault}{\ttdefault}
 \usepackage[scale=0.9]{FiraMono}
 \usepackage{url}
+\usepackage{float}
 
 \title{\textbf{CSU11022 Mid-Semester Test Cheat Sheet}}
 
@@ -172,6 +173,29 @@ have this limitation.
           \item If-then-else constructs are expensive.
           \item For conditional branches, optimise for the common case.
         \end{itemize}
+\end{itemize}
+
+% ─────────────────────────────────────────────
+\section{Floating Point Numbers}
+
+\begin{itemize}
+  \item IEEE-754 is used to represent floating point numbers within a 32 bit value.
+  \item Bit 31 represents the sign, if it is 1 the number is negative.
+  \item Bits 30-23 hold the exponent of 2 that the fraction is multiplied by.
+  \item However, rather than using 2s compliment, we use a constant bias that we subtract from the exponent to obtain a signed exponent. For a 32 bit floating point value this is 127.
+  \item Bits 22-0 hold the fraction, a normalized binary representation.
+  \item However, as we know that there is always going to be a 1 left of the radix point, we do not need to store it.
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.5\linewidth]{img2.png}
+      \caption{Diagram of IEEE-754 Floating-Point Representation}
+      \label{fig:placeholder}
+  \end{figure}
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.5\linewidth]{image.png}
+      \label{fig:placeholder}
+  \end{figure}
 \end{itemize}
 
 \bigskip
